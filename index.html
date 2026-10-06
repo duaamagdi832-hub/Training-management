@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مسار | إدارة الدورات التدريبية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F0; --white:#FBFCFA; --ink:#13242B; --mute:#5B6B70; --line:#D3D9D1;
+  --teal:#0E6E6A; --teal-d:#0A4F4C; --sun:#E9A93B; --rose:#C2465B;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'IBM Plex Sans Arabic','Tajawal',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.7;font-size:16px;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* header */
+.top{background:var(--ink);color:var(--white);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:22px;font-weight:700;color:var(--sun);letter-spacing:0}
+.who{display:flex;align-items:center;gap:10px;font-size:14px}
+.who small{color:#9FB3B8;display:block;line-height:1.2}
+.linkbtn{background:none;border:1px solid #3C525A;color:var(--white);border-radius:8px;padding:6px 12px;font-size:13px}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:0 12px;background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;font-weight:500;color:var(--mute);white-space:nowrap}
+.tab[aria-current="true"]{color:var(--teal-d);border-color:var(--teal);font-weight:700}
+main{max-width:920px;margin:0 auto;padding:22px 16px 90px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+h1{font-size:24px;line-height:1.3}
+h2{font-size:18px}
+h3{font-size:17px}
+.sub{color:var(--mute);font-size:14px;margin-bottom:14px}
+
+/* buttons */
+.btn{border:1px solid var(--ink);background:transparent;border-radius:8px;padding:8px 14px;font-weight:500;font-size:14px}
+.btn:hover{background:#E4E9E2}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d)}
+.btn.danger{border-color:var(--rose);color:var(--rose)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+/* rows */
+.list{border-top:2px solid var(--ink);margin-top:12px}
+.row{display:flex;justify-content:space-between;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.row-main{flex:1 1 320px;min-width:0}
+.row-act{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+.meta{display:flex;gap:6px 16px;flex-wrap:wrap;color:var(--mute);font-size:13.5px;margin:2px 0 8px}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 9px;border-radius:99px;border:1px solid currentColor;margin-inline-start:8px;vertical-align:middle}
+.badge.run{color:var(--teal)} .badge.done{color:var(--mute)} .badge.new{color:#A8741A}
+
+/* session strip */
+.strip{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
+.strip i{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--teal);display:block}
+.strip i.on{background:var(--teal)}
+.strip i.off{background:var(--rose);border-color:var(--rose)}
+.strip i.na{background:var(--line);border-color:var(--line)}
+
+/* figures */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:2px solid var(--ink);border-bottom:1px solid var(--line);margin:14px 0 26px}
+.fig{padding:14px 12px;border-inline-start:1px solid var(--line)}
+.fig:first-child{border-inline-start:0}
+.fig b{display:block;font-size:28px;line-height:1.2;font-weight:700}
+.fig span{font-size:13px;color:var(--mute)}
+
+.empty{padding:28px 0;color:var(--mute)}
+.empty b{color:var(--ink);display:block;margin-bottom:4px}
+
+/* login */
+.login{max-width:520px;margin:0 auto;padding:36px 20px 60px}
+.hero-strip{display:flex;gap:6px;margin:6px 0 22px}
+.hero-strip i{width:26px;height:26px;border-radius:5px;border:2px solid var(--teal);background:transparent;animation:fill .4s ease forwards;animation-delay:calc(var(--n)*110ms)}
+@keyframes fill{to{background:var(--teal)}}
+.login h1{font-size:40px;color:var(--teal-d)}
+.pick{display:flex;width:100%;text-align:start;align-items:center;justify-content:space-between;gap:10px;background:var(--white);border:1px solid var(--line);border-inline-start:5px solid var(--teal);border-radius:8px;padding:14px 16px;margin-top:10px}
+.pick:hover{border-color:var(--teal)}
+.pick b{display:block;font-size:17px}
+.pick small{color:var(--mute)}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(19,36,43,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+#modal[hidden]{display:none}
+.sheet{background:var(--white);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px 26px}
+@media(min-width:640px){#modal{align-items:center}.sheet{border-radius:14px}}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px}
+form label{display:block;font-size:14px;font-weight:500;margin-bottom:12px}
+form input,form select{display:block;width:100%;margin-top:4px;padding:9px 10px;border:1px solid #AEB9B4;border-radius:8px;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+form .btn.primary{width:100%;padding:11px;margin-top:6px;font-size:16px}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.trow label{margin:0;display:flex;align-items:center;gap:10px;flex:1}
+.trow input[type=checkbox]{width:22px;height:22px;margin:0;accent-color:var(--teal)}
+.trow input[type=number]{width:84px;margin:0}
+
+/* certificate */
+.cert{border:3px double var(--teal);padding:28px 18px;text-align:center;background:#fff}
+.cert h2{font-size:30px;color:var(--teal-d);margin:10px 0}
+.cert .strip{justify-content:center}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+
+@media print{
+  body *{visibility:hidden}
+  .cert,.cert *{visibility:visible}
+  .cert{position:fixed;inset:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-strip i{animation:none;background:var(--teal)}
+  #toast{transition:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- البيانات (تجريبية، تُحفظ في الذاكرة فقط) ---------- */
+let _id = 100;
+const uid = () => ++_id;
+const db = {
+  trainers: [
+    {id:1, name:'م. هالة سمير', field:'التسويق الرقمي'},
+    {id:2, name:'م. كريم فؤاد', field:'البرمجة'},
+    {id:3, name:'د. منى عادل', field:'القيادة والإدارة'}
+  ],
+  trainees: [
+    {id:1, name:'سارة أحمد', email:'sara@example.com'},
+    {id:2, name:'محمد علي', email:'mohamed@example.com'},
+    {id:3, name:'نورهان حسن', email:'nourhan@example.com'},
+    {id:4, name:'يوسف إبراهيم', email:'youssef@example.com'},
+    {id:5, name:'ملك خالد', email:'malak@example.com'}
+  ],
+  courses: [
+    {id:1, title:'أساسيات التسويق الرقمي', trainerId:1, total:8, held:4, capacity:20, start:'2026-09-14', price:1800},
+    {id:2, title:'برمجة الويب للمبتدئين', trainerId:2, total:10, held:10, capacity:15, start:'2026-08-02', price:2500},
+    {id:3, title:'مهارات القيادة وإدارة الفرق', trainerId:3, total:6, held:0, capacity:25, start:'2026-10-25', price:2000}
+  ],
+  enrollments: [
+    {id:1, courseId:1, traineeId:1, att:[1,1,0,1], grade:null},
+    {id:2, courseId:1, traineeId:2, att:[1,1,1,1], grade:null},
+    {id:3, courseId:1, traineeId:3, att:[0,1,1,0], grade:null},
+    {id:4, courseId:2, traineeId:1, att:[1,1,1,1,1,1,1,1,1,1], grade:92},
+    {id:5, courseId:2, traineeId:4, att:[1,0,1,1,1,1,0,1,1,1], grade:76},
+    {id:6, courseId:3, traineeId:2, att:[], grade:null}
+  ]
+};
+
+/* ---------- حالة الواجهة ---------- */
+let session = null;      // {role, id}
+let loginRole = null;
+let tab = '';
+const TABS = {
+  admin:[['dash','المتابعة'],['courses','الدورات'],['trainees','المتدربون'],['trainers','المدربون']],
+  trainer:[['mine','دوراتي']],
+  trainee:[['mine','دوراتي'],['open','دورات متاحة']]
+};
+const ROLES = {admin:'الإدارة', trainer:'مدرب', trainee:'متدرب'};
+
+/* ---------- أدوات ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T = id => db.trainers.find(x => x.id == id);
+const S = id => db.trainees.find(x => x.id == id);
+const C = id => db.courses.find(x => x.id == id);
+const enrOf = cid => db.enrollments.filter(e => e.courseId == cid);
+const money = n => Number(n).toLocaleString('en-US') + ' ج.م';
+const attPct = e => {
+  const v = e.att.filter(x => x !== null);
+  return v.length ? Math.round(v.reduce((a,b) => a + b, 0) / v.length * 100) : null;
+};
+const status = c => c.held === 0 ? ['لم تبدأ','new'] : c.held >= c.total ? ['مكتملة','done'] : ['جارية','run'];
+const eligible = e => {
+  const c = C(e.courseId), p = attPct(e);
+  return c.held >= c.total && p !== null && p >= 75 && e.grade !== null && e.grade >= 50;
+};
+function strip(c, att){
+  let h = '';
+  for(let i = 0; i < c.total; i++){
+    let cls = '';
+    if(i < c.held){
+      cls = att ? (att[i] === 1 ? 'on' : att[i] === 0 ? 'off' : 'na') : 'on';
+    }
+    h += `<i class="${cls}"></i>`;
+  }
+  return `<div class="strip" role="img" aria-label="${c.held} من ${c.total} حصص">${h}</div>`;
+}
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function modal(title, body){
+  const m = document.getElementById('modal');
+  m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="sheet-h"><h2>${esc(title)}</h2><button class="x" data-act="close" aria-label="إغلاق">×</button></div>${body}</div>`;
+  m.hidden = false;
+}
+const closeModal = () => { document.getElementById('modal').hidden = true; };
+const emptyBox = (t, d) => `<div class="empty"><b>${t}</b>${d}</div>`;
+
+/* ---------- صفحة الدخول ---------- */
+function loginView(){
+  const strip10 = Array.from({length:10}, (_,i) => `<i style="--n:${i}"></i>`).join('');
+  let body;
+  if(!loginRole){
+    body = `<p class="sub">اختاري أو اختر دورك للدخول إلى النسخة التجريبية.</p>
+      <button class="pick" data-act="role" data-role="admin"><span><b>الإدارة</b><small>الدورات والمتدربون والمدربون</small></span></button>
+      <button class="pick" data-act="role" data-role="trainer"><span><b>مدرب</b><small>تسجيل الحضور ورصد الدرجات</small></span></button>
+      <button class="pick" data-act="role" data-role="trainee"><span><b>متدرب</b><small>متابعة دوراتي والتسجيل في دورات جديدة</small></span></button>`;
+  } else {
+    const people = loginRole === 'trainer' ? db.trainers : db.trainees;
+    body = `<button class="btn sm" data-act="back">رجوع</button>
+      <p class="sub" style="margin-top:12px">من أنت؟</p>
+      ${people.map(p => `<button class="pick" data-act="pick" data-id="${p.id}"><span><b>${esc(p.name)}</b><small>${esc(p.field || p.email)}</small></span></button>`).join('')}`;
+  }
+  return `<div class="login"><div class="hero-strip" aria-hidden="true">${strip10}</div><h1>مسار</h1>${body}</div>`;
+}
+
+/* ---------- الهيكل ---------- */
+function user(){
+  if(session.role === 'admin') return {name:'مدير النظام'};
+  return session.role === 'trainer' ? T(session.id) : S(session.id);
+}
+function shell(content){
+  const u = user();
+  const tabs = TABS[session.role].map(([k,l]) => `<button class="tab" data-act="tab" data-tab="${k}" ${tab === k ? 'aria-current="true"' : ''}>${l}</button>`).join('');
+  return `<header class="top"><span class="brand">مسار</span>
+    <div class="who"><div>${esc(u.name)}<small>${ROLES[session.role]}</small></div><button class="linkbtn" data-act="logout">خروج</button></div></header>
+    <nav class="tabs" aria-label="الأقسام">${tabs}</nav><main>${content}</main>`;
+}
+
+/* ---------- الإدارة ---------- */
+function courseRow(c, actions, att, extra){
+  const t = T(c.trainerId), n = enrOf(c.id).length, [sl, sc] = status(c);
+  return `<article class="row"><div class="row-main">
+    <h3>${esc(c.title)}<span class="badge ${sc}">${sl}</span></h3>
+    <div class="meta"><span>${esc(t ? t.name : 'بدون مدرب')}</span><span>يبدأ ${c.start}</span><span>${n} من ${c.capacity} متدرب</span>${extra || ''}</div>
+    ${strip(c, att)}
+    <div class="meta"><span>${c.held} من ${c.total} حصص</span></div>
+  </div><div class="row-act">${actions}</div></article>`;
+}
+function adminDash(){
+  const act = db.courses.filter(c => c.held < c.total).length;
+  const all = db.enrollments.map(attPct).filter(x => x !== null);
+  const avg = all.length ? Math.round(all.reduce((a,b) => a + b, 0) / all.length) + '%' : '-';
+  const rev = db.enrollments.reduce((s,e) => s + (C(e.courseId)?.price || 0), 0);
+  return `<div class="head"><h1>المتابعة</h1></div>
+    <div class="figs">
+      <div class="fig"><b>${act}</b><span>دورات غير مكتملة</span></div>
+      <div class="fig"><b>${db.trainees.length}</b><span>متدربون</span></div>
+      <div class="fig"><b>${db.trainers.length}</b><span>مدربون</span></div>
+      <div class="fig"><b>${avg}</b><span>متوسط الحضور</span></div>
+      <div class="fig"><b>${money(rev)}</b><span>إجمالي رسوم التسجيل</span></div>
+    </div>
+    <h2>حالة الدورات</h2>
+    <div class="list">${db.courses.length ? db.courses.map(c => courseRow(c, '')).join('') : emptyBox('لا توجد دورات','أضيفي دورة من قسم الدورات.')}</div>`;
+}
+function adminCourses(){
+  const rows = db.courses.map(c => courseRow(c,
+    `<button class="btn sm" data-act="course-trainees" data-id="${c.id}">المتدربون</button>
+     <button class="btn sm" data-act="edit-course" data-id="${c.id}">تعديل</button>
+     <button class="btn sm danger" data-act="del-course" data-id="${c.id}">حذف</button>`,
+    null, `<span>${money(c.price)}</span>`)).join('');
+  return `<div class="head"><h1>الدورات</h1><button class="btn primary" data-act="new-course">إضافة دورة</button></div>
+    <p class="sub">${db.courses.length} دورة</p>
+    <div class="list">${rows || emptyBox('لا توجد دورات بعد','اضغطي «إضافة دورة» لبدء أول دورة.')}</div>`;
+}
+function adminTrainees(){
+  const rows = db.trainees.map(s => {
+    const n = db.enrollments.filter(e => e.traineeId == s.id).length;
+    return `<article class="row"><div class="row-main"><h3>${esc(s.name)}</h3>
+      <div class="meta"><span>${esc(s.email)}</span><span>${n} دورات</span></div></div></article>`;
+  }).join('');
+  return `<div class="head"><h1>المتدربون</h1><button class="btn primary" data-act="new-trainee">إضافة متدرب</button></div>
+    <p class="sub">${db.trainees.length} متدرب</p>
+    <div class="list">${rows || emptyBox('لا يوجد متدربون','أضيفي متدربًا ثم سجليه في دورة.')}</div>`;
+}
+function adminTrainers(){
+  const rows = db.trainers.map(t => {
+    const n = db.courses.filter(c => c.trainerId == t.id).length;
+    return `<article class="row"><div class="row-main"><h3>${esc(t.name)}</h3>
+      <div class="meta"><span>${esc(t.field)}</span><span>${n} دورات</span></div></div></article>`;
+  }).join('');
+  return `<div class="head"><h1>المدربون</h1><button class="btn primary" data-act="new-trainer">إضافة مدرب</button></div>
+    <p class="sub">${db.trainers.length} مدرب</p>
+    <div class="list">${rows || emptyBox('لا يوجد مدربون','أضيفي مدربًا قبل إنشاء الدورات.')}</div>`;
+}
+
+/* ---------- المدرب ---------- */
+function trainerMine(){
+  const mine = db.courses.filter(c => c.trainerId == session.id);
+  const rows = mine.map(c => {
+    const es = enrOf(c.id);
+    const ps = es.map(attPct).filter(x => x !== null);
+    const avg = ps.length ? Math.round(ps.reduce((a,b) => a + b, 0) / ps.length) + '%' : '-';
+    return courseRow(c,
+      `<button class="btn sm primary" data-act="rec-session" data-id="${c.id}" ${c.held >= c.total || !es.length ? 'disabled' : ''}>تسجيل حصة</button>
+       <button class="btn sm" data-act="grades" data-id="${c.id}" ${!es.length ? 'disabled' : ''}>الدرجات</button>`,
+      null, `<span>متوسط الحضور ${avg}</span>`);
+  }).join('');
+  return `<div class="head"><h1>دوراتي</h1></div><p class="sub">${mine.length} دورة مسندة إليك</p>
+    <div class="list">${rows || emptyBox('لا توجد دورات مسندة إليك','ستظهر هنا عندما تسند الإدارة إليك دورة.')}</div>`;
+}
+
+/* ---------- المتدرب ---------- */
+function traineeMine(){
+  const mine = db.enrollments.filter(e => e.traineeId == session.id);
+  const rows = mine.map(e => {
+    const c = C(e.courseId), p = attPct(e);
+    const extra = `<span>الحضور ${p === null ? '-' : p + '%'}</span><span>الدرجة ${e.grade === null ? 'لم تُرصد' : e.grade + ' / 100'}</span>`;
+    const act = eligible(e) ? `<button class="btn sm primary" data-act="cert" data-id="${e.id}">عرض الشهادة</button>` : '';
+    return courseRow(c, act, e.att, extra);
+  }).join('');
+  return `<div class="head"><h1>دوراتي</h1></div>
+    <p class="sub">المربع الأخضر حصة حضرتها، والأحمر حصة غبت عنها. الشهادة تظهر بعد إكمال الدورة بحضور 75% فأكثر ودرجة 50 فأكثر.</p>
+    <div class="list">${rows || emptyBox('لم تسجل في أي دورة بعد','افتحي «دورات متاحة» واختاري دورة.')}</div>`;
+}
+function traineeOpen(){
+  const mineIds = db.enrollments.filter(e => e.traineeId == session.id).map(e => e.courseId);
+  const open = db.courses.filter(c => !mineIds.includes(c.id) && c.held < c.total);
+  const rows = open.map(c => {
+    const full = enrOf(c.id).length >= c.capacity;
+    return courseRow(c, `<button class="btn sm primary" data-act="join" data-id="${c.id}" ${full ? 'disabled' : ''}>${full ? 'مكتملة العدد' : 'سجّل'}</button>`, null, `<span>${money(c.price)}</span>`);
+  }).join('');
+  return `<div class="head"><h1>دورات متاحة</h1></div><p class="sub">${open.length} دورة يمكنك التسجيل فيها</p>
+    <div class="list">${rows || emptyBox('لا توجد دورات متاحة الآن','ستظهر هنا الدورات الجديدة عند إضافتها.')}</div>`;
+}
+
+const VIEWS = {
+  admin:{dash:adminDash, courses:adminCourses, trainees:adminTrainees, trainers:adminTrainers},
+  trainer:{mine:trainerMine},
+  trainee:{mine:traineeMine, open:traineeOpen}
+};
+
+function render(){
+  const app = document.getElementById('app');
+  if(!session){ app.innerHTML = loginView(); return; }
+  app.innerHTML = shell(VIEWS[session.role][tab]());
+}
+
+/* ---------- النماذج ---------- */
+function courseForm(c){
+  c = c || {title:'', trainerId:db.trainers[0]?.id, total:8, capacity:20, start:'2026-11-01', price:1500};
+  return `<form data-form="course" data-id="${c.id || ''}">
+    <label>اسم الدورة<input name="title" required value="${esc(c.title)}"></label>
+    <label>المدرب<select name="trainerId">${db.trainers.map(t => `<option value="${t.id}" ${t.id == c.trainerId ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>
+    <div class="two"><label>عدد الحصص<input type="number" name="total" min="1" max="60" required value="${c.total}"></label>
+    <label>الحد الأقصى للمتدربين<input type="number" name="capacity" min="1" required value="${c.capacity}"></label></div>
+    <div class="two"><label>تاريخ البداية<input type="date" name="start" required value="${c.start}"></label>
+    <label>الرسوم (ج.م)<input type="number" name="price" min="0" required value="${c.price}"></label></div>
+    <button class="btn primary">حفظ الدورة</button></form>`;
+}
+function openCourseTrainees(cid){
+  const c = C(cid), es = enrOf(cid);
+  const taken = es.map(e => e.traineeId);
+  const free = db.trainees.filter(s => !taken.includes(s.id));
+  const list = es.map(e => `<div class="trow"><span>${esc(S(e.traineeId).name)}</span>
+    <button class="btn sm danger" data-act="unenroll" data-id="${e.id}">إلغاء التسجيل</button></div>`).join('')
+    || `<div class="empty"><b>لا يوجد متدربون مسجلون</b>اختاري متدربًا من القائمة بالأسفل.</div>`;
+  const add = es.length >= c.capacity
+    ? `<p class="sub" style="margin-top:12px">اكتمل العدد الأقصى للدورة.</p>`
+    : free.length
+      ? `<form data-form="enroll" data-id="${cid}" style="margin-top:14px"><label>تسجيل متدرب جديد<select name="traineeId">${free.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></label><button class="btn primary">تسجيل في الدورة</button></form>`
+      : `<p class="sub" style="margin-top:12px">كل المتدربين مسجلون في هذه الدورة.</p>`;
+  modal(c.title, list + add);
+}
+
+/* ---------- الأحداث ---------- */
+document.addEventListener('click', e => {
+  if(e.target.id === 'modal'){ closeModal(); return; }
+  const b = e.target.closest('[data-act]');
+  if(!b) return;
+  const a = b.dataset.act, id = +b.dataset.id || 0;
+
+  if(a === 'close') return closeModal();
+  if(a === 'role'){
+    loginRole = b.dataset.role;
+    if(loginRole === 'admin'){ session = {role:'admin'}; tab = 'dash'; }
+    return render();
+  }
+  if(a === 'back'){ loginRole = null; return render(); }
+  if(a === 'pick'){ session = {role:loginRole, id}; tab = TABS[loginRole][0][0]; return render(); }
+  if(a === 'logout'){ session = null; loginRole = null; return render(); }
+  if(a === 'tab'){ tab = b.dataset.tab; return render(); }
+
+  if(a === 'new-course'){
+    if(!db.trainers.length) return toast('أضيفي مدربًا أولًا');
+    return modal('إضافة دورة', courseForm());
+  }
+  if(a === 'edit-course') return modal('تعديل الدورة', courseForm(C(id)));
+  if(a === 'del-course'){
+    const c = C(id);
+    return modal('حذف الدورة', `<p>سيتم حذف «${esc(c.title)}» وكل تسجيلاتها وحضورها ودرجاتها. لا يمكن التراجع.</p>
+      <div class="row-act" style="margin-top:16px"><button class="btn danger" data-act="del-course-yes" data-id="${id}">حذف الدورة</button><button class="btn" data-act="close">إلغاء</button></div>`);
+  }
+  if(a === 'del-course-yes'){
+    db.courses = db.courses.filter(c => c.id !== id);
+    db.enrollments = db.enrollments.filter(x => x.courseId !== id);
+    closeModal(); render(); return toast('تم حذف الدورة');
+  }
+  if(a === 'course-trainees') return openCourseTrainees(id);
+  if(a === 'unenroll'){
+    const en = db.enrollments.find(x => x.id === id), cid = en.courseId;
+    db.enrollments = db.enrollments.filter(x => x.id !== id);
+    render(); openCourseTrainees(cid); return toast('تم إلغاء التسجيل');
+  }
+  if(a === 'new-trainee') return modal('إضافة متدرب', `<form data-form="trainee">
+    <label>الاسم<input name="name" required></label>
+    <label>البريد الإلكتروني<input type="email" name="email" required></label>
+    <button class="btn primary">حفظ المتدرب</button></form>`);
+  if(a === 'new-trainer') return modal('إضافة مدرب', `<form data-form="trainer">
+    <label>الاسم<input name="name" required></label>
+    <label>التخصص<input name="field" required></label>
+    <button class="btn primary">حفظ المدرب</button></form>`);
+
+  if(a === 'rec-session'){
+    const c = C(id), es = enrOf(id);
+    return modal(`حصة ${c.held + 1} من ${c.total}`, `<form data-form="session" data-id="${id}">
+      <p class="sub">فعّلي الخيار بجوار كل متدرب حضر الحصة.</p>
+      ${es.map(x => `<div class="trow"><label><input type="checkbox" name="p${x.id}" checked> ${esc(S(x.traineeId).name)}</label></div>`).join('')}
+      <button class="btn primary" style="margin-top:14px">حفظ الحضور</button></form>`);
+  }
+  if(a === 'grades'){
+    const c = C(id), es = enrOf(id);
+    return modal('درجات ' + c.title, `<form data-form="grades" data-id="${id}">
+      ${es.map(x => `<div class="trow"><label for="g${x.id}">${esc(S(x.traineeId).name)}</label>
+        <input id="g${x.id}" type="number" name="g${x.id}" min="0" max="100" value="${x.grade ?? ''}" placeholder="من 100"></div>`).join('')}
+      <button class="btn primary" style="margin-top:14px">حفظ الدرجات</button></form>`);
+  }
+  if(a === 'join'){
+    const c = C(id);
+    if(enrOf(id).length >= c.capacity) return toast('اكتمل عدد الدورة');
+    db.enrollments.push({id:uid(), courseId:id, traineeId:session.id, att:Array(c.held).fill(null), grade:null});
+    tab = 'mine'; render(); return toast('تم تسجيلك في الدورة');
+  }
+  if(a === 'cert'){
+    const en = db.enrollments.find(x => x.id === id), c = C(en.courseId), t = T(c.trainerId);
+    return modal('الشهادة', `<div class="cert">
+      <p>شهادة إتمام دورة تدريبية</p>
+      <h2>${esc(S(en.traineeId).name)}</h2>
+      <p>أتمّ بنجاح دورة</p><h3>${esc(c.title)}</h3>
+      ${strip(c, en.att)}
+      <p class="sub" style="margin-top:10px">الحضور ${attPct(en)}% والدرجة ${en.grade} / 100</p>
+      <p>المدرب: ${esc(t ? t.name : '')}</p></div>
+      <button class="btn primary" style="width:100%;margin-top:12px" data-act="print">طباعة الشهادة</button>`);
+  }
+  if(a === 'print') return window.print();
+});
+
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, kind = f.dataset.form, id = +f.dataset.id || 0;
+  const d = Object.fromEntries(new FormData(f));
+
+  if(kind === 'course'){
+    const total = +d.total, capacity = +d.capacity;
+    if(id){
+      const c = C(id);
+      Object.assign(c, {title:d.title.trim(), trainerId:+d.trainerId, start:d.start, price:+d.price,
+        total:Math.max(total, c.held), capacity:Math.max(capacity, enrOf(id).length)});
+    } else {
+      db.courses.push({id:uid(), title:d.title.trim(), trainerId:+d.trainerId, total, held:0, capacity, start:d.start, price:+d.price});
+    }
+    toast('تم حفظ الدورة');
+  }
+  if(kind === 'enroll'){
+    const c = C(id);
+    if(enrOf(id).length >= c.capacity) return toast('اكتمل عدد الدورة');
+    db.enrollments.push({id:uid(), courseId:id, traineeId:+d.traineeId, att:Array(c.held).fill(null), grade:null});
+    render(); openCourseTrainees(id); return toast('تم تسجيل المتدرب');
+  }
+  if(kind === 'trainee'){ db.trainees.push({id:uid(), name:d.name.trim(), email:d.email.trim()}); toast('تمت إضافة المتدرب'); }
+  if(kind === 'trainer'){ db.trainers.push({id:uid(), name:d.name.trim(), field:d.field.trim()}); toast('تمت إضافة المدرب'); }
+  if(kind === 'session'){
+    const c = C(id);
+    enrOf(id).forEach(x => x.att.push(d['p' + x.id] ? 1 : 0));
+    c.held++;
+    toast('تم حفظ حضور الحصة ' + c.held);
+  }
+  if(kind === 'grades'){
+    enrOf(id).forEach(x => {
+      const v = d['g' + x.id];
+      x.grade = v === '' || v === undefined ? null : Math.min(100, Math.max(0, +v));
+    });
+    toast('تم حفظ الدرجات');
+  }
+  closeModal(); render();
+});
+
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+render();
+</script>
+</body>
+</html>
